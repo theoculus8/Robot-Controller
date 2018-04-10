@@ -95,7 +95,8 @@ public class VideoActivity extends Activity implements IVLCVout.Callback {
         vout.setWindowSize(Resources.getSystem().getDisplayMetrics().widthPixels, (int) (Resources.getSystem().getDisplayMetrics().widthPixels * VIDEO_ASPECT_RATIO));
         vout.attachViews();
 
-        Media media = new Media(mLibVLC, Uri.parse("http://jeremy:jeremy@" + chassisAddress + ":" + VIDEO_PORT + "/cam_pic_new.php?"));
+        Media media = new Media(mLibVLC, Uri.parse("http://jeremy:jeremy@" + armAddress + ":" + VIDEO_PORT + "/cam_pic_new.php?"));//Change back to chassis
+        //Media media = new Media(mLibVLC, Uri.parse("tcp/h264://" + armAddress + ":3333"));
         media.setHWDecoderEnabled(true, false);
         media.addOption(":network-caching=100");
         media.addOption(":clock-jitter=0");

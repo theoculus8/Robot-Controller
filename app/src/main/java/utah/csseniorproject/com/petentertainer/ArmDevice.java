@@ -4,6 +4,7 @@ package utah.csseniorproject.com.petentertainer;
 public class ArmDevice extends Device {
     private final static String armPitchMotorIdentifier = "arm_pitch_motor";
     private final static String armReachMotorIdentifier = "arm_reach_motor";
+    private final static String armGraspMotorIdentifier = "arm_hand_motor";
     private final static String armLaserIdentifier = "laser";
 
 
@@ -34,6 +35,16 @@ public class ArmDevice extends Device {
     public void stopExtendArm() {
         sendCommand(armReachMotorIdentifier, 0);
     }
+
+    public void graspArm(int percent) {
+        sendCommand(armGraspMotorIdentifier, percent);
+    }
+
+    public void releaseArm(int percent) {
+        sendCommand(armGraspMotorIdentifier, -percent);
+    }
+
+    public void stopGraspArm() { sendCommand(armGraspMotorIdentifier, 0); }
 
     public void turnLaserOn() {
         sendCommand(armLaserIdentifier, 100);

@@ -33,6 +33,9 @@ public class TCPConnection {
 
     private HashMap<String, String> commandCache;
 
+    private String ipAddress;
+    private int port;
+
     public TCPConnection() {
         InputStream certificateStream = null;
         try {
@@ -105,6 +108,9 @@ public class TCPConnection {
     }
 
     public void remoteConnect(String ipAddress, int port) {
+        this.ipAddress = ipAddress;
+        this.port = port;
+
         SSLSocketFactory factory = context.getSocketFactory();
         try {
             socket = (SSLSocket) factory.createSocket(ipAddress, port);
@@ -143,7 +149,17 @@ public class TCPConnection {
             outputStream.writeBytes(jsonString);
             outputStream.flush();
         } catch (IOException e) {
-            Log.e(TAG, "exception", e);
+            Log.e(TAG, "Failed to write. Probably lost connection", e);
+
+            // Try again
+            remoteConnect(ipAddress, port);
+
+            try {
+                outputStream.writeBytes(jsonString);
+                outputStream.flush();
+            } catch (IOException e1) {
+                Log.e(TAG, "Failed to reconnect", e1);
+            }
         }
     }
 
