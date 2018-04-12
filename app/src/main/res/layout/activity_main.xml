@@ -1,45 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_gravity="center_vertical"
+    android:gravity="center"
     tools:context="utah.csseniorproject.com.petentertainer.MainActivity">
 
-    <Button
-        android:id="@+id/connectButton"
+    <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="173dp"
-        android:layout_marginStart="107dp"
-        android:text="Connect"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/armAddressText" />
+        android:text="Enter ip addresses to connect to robot" />
+
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="50dp" />
 
     <EditText
         android:id="@+id/chassisAddressText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:layout_marginStart="75dp"
-        android:layout_marginTop="119dp"
         android:ems="10"
-        android:inputType="textPersonName"
-        app:layout_constraintBottom_toTopOf="@+id/armAddressText"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/armAddressText"
         android:layout_width="wrap_content"
-        android:layout_height="0dp"
-        android:layout_marginBottom="83dp"
+        android:layout_height="wrap_content"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:text="IP Address 2"
-        app:layout_constraintBottom_toTopOf="@+id/connectButton"
-        app:layout_constraintStart_toStartOf="@+id/chassisAddressText"
-        app:layout_constraintTop_toBottomOf="@+id/chassisAddressText" />
+        android:inputType="textPersonName" />
 
-</android.support.constraint.ConstraintLayout>
+    <Space
+        android:layout_width="wrap_content"
+        android:layout_height="50dp" />
+
+    <Button
+        android:id="@+id/connectButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Connect" />
+
+</LinearLayout>
