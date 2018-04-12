@@ -36,6 +36,9 @@ public class TCPConnection {
     private String ipAddress;
     private int port;
 
+    private Thread keepAlivesThread;
+    private boolean terminateThread;
+
     public TCPConnection() {
         InputStream certificateStream = null;
         try {
@@ -105,9 +108,11 @@ public class TCPConnection {
         }
 
         commandCache = new HashMap<>();
+
+        terminateThread = false;
     }
 
-    public void remoteConnect(String ipAddress, int port) {
+    public boolean remoteConnect(String ipAddress, int port) {
         this.ipAddress = ipAddress;
         this.port = port;
 
@@ -116,20 +121,57 @@ public class TCPConnection {
             socket = (SSLSocket) factory.createSocket(ipAddress, port);
         } catch (IOException e) {
             Log.e(TAG, "Failed to connect to address: " + ipAddress + ", port: " + port, e);
+            return false;
         }
         try {
             socket.startHandshake();
         } catch (IOException e) {
             Log.e(TAG, "Handshake failed", e);
+            return false;
         }
         try {
             outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
         } catch (IOException e) {
             Log.e(TAG, "exception", e);
+            return false;
+        }
+
+        keepAlivesThread = new Thread(new Runnable() {
+            public void run() {
+                sendKeepAlives();
+            }
+        });
+        keepAlivesThread.start();
+
+        return true;
+    }
+
+    private void sendKeepAlives()
+    {
+        JSONArray json = new JSONArray();
+        json.put("alive");
+        while (!terminateThread) {
+            if (!writeJsonToSocket(json))
+                break;
+
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public synchronized void writeJsonToSocket(JSONArray json) {
+    public void killThreads() {
+        terminateThread = true;
+        //try {
+        //    keepAlivesThread.join();
+        //} catch (InterruptedException e) {
+        //    e.printStackTrace();
+        //}
+    }
+
+    public synchronized boolean writeJsonToSocket(JSONArray json) {
         String jsonString = json.toString();
 
         try {
@@ -137,7 +179,7 @@ public class TCPConnection {
             String device = object.getString("device");
             if (commandCache.containsKey(device)) {
                 if (commandCache.get(device).equals(jsonString)) {
-                    return;
+                    return true;
                 }
             }
             commandCache.put(device, jsonString);
@@ -159,8 +201,12 @@ public class TCPConnection {
                 outputStream.flush();
             } catch (IOException e1) {
                 Log.e(TAG, "Failed to reconnect", e1);
+
+                return false;
             }
         }
+
+        return true;
     }
 
     public boolean isConnected() {

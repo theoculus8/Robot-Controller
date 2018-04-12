@@ -64,7 +64,7 @@ public class ControllerView extends View {
     private long lastTapTime_msec = 0;
 
 
-    public ControllerView(Context context, String armAddress, String chassisAddress) {
+    public ControllerView(Context context, String armAddress, String chassisAddress) throws Exception {
         super(context);
 
         dotPaint = new Paint();
@@ -122,6 +122,10 @@ public class ControllerView extends View {
         deviceManager = new DeviceManager(armAddress, chassisAddress);
 
         activeDevice = Device.chassis;
+    }
+
+    public void killThreads() {
+        deviceManager.killThreads();
     }
 
     public interface ControllerSwitchListener {

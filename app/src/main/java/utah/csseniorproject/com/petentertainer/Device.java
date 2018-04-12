@@ -15,12 +15,28 @@ public abstract class Device {
     }
 
 
-    public void connectToDevice(final String ipAddress) {
-        new Thread(new Runnable() {
+    public void connectToDevice(final String ipAddress) throws Exception {
+        final boolean isConnected[] = new boolean[1]; // Weird way to get return value
+        Thread thread = new Thread(new Runnable() {
             public void run() {
-                tcpConnection.remoteConnect(ipAddress, COMMANDS_PORT);
+                isConnected[0] = tcpConnection.remoteConnect(ipAddress, COMMANDS_PORT);
             }
-        }).start();
+        });
+        thread.start();
+
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        if (!isConnected[0]) {
+            throw new Exception("Failed to connect to " + ipAddress);
+        }
+    }
+
+    public void killThreads() {
+        tcpConnection.killThreads();
     }
 
     protected void sendCommand(String deviceString, int percent) {

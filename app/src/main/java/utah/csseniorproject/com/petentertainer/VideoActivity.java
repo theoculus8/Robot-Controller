@@ -8,6 +8,7 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import org.videolan.libvlc.IVLCVout;
 import org.videolan.libvlc.LibVLC;
@@ -44,7 +45,12 @@ public class VideoActivity extends Activity implements IVLCVout.Callback {
         armAddress = getIntent().getExtras().getString("armAddress");
         chassisAddress = getIntent().getExtras().getString("chassisAddress");
 
-        controllerView = new ControllerView(this, armAddress, chassisAddress);
+        try {
+            controllerView = new ControllerView(this, armAddress, chassisAddress);
+        } catch (Exception e) {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
 
         controllerView.setEventListener(new ControllerView.ControllerSwitchListener() {
             @Override
@@ -53,12 +59,12 @@ public class VideoActivity extends Activity implements IVLCVout.Callback {
                     case arm: {
                         mMediaPlayer.stop();
 
-                        Media media = new Media(mLibVLC, Uri.parse("http://jeremy:jeremy@" + chassisAddress + ":" + VIDEO_PORT + "/cam_pic_new.php?"));
+                        Media media = new Media(mLibVLC, Uri.parse("http://jeremy:jeremy@" + armAddress + ":" + VIDEO_PORT + "/cam_pic_new.php?"));
                         media.setHWDecoderEnabled(true, false);
                         media.addOption(":network-caching=100");
                         media.addOption(":clock-jitter=0");
                         media.addOption(":clock-synchro=0");
-                        media.addOption(":transform-type=180");
+                        //media.addOption(":transform-type=180");
 
                         mMediaPlayer.setMedia(media);
                         mMediaPlayer.play();
@@ -67,12 +73,12 @@ public class VideoActivity extends Activity implements IVLCVout.Callback {
                     case chassis: {
                         mMediaPlayer.stop();
 
-                        Media media = new Media(mLibVLC, Uri.parse("http://jeremy:jeremy@" + armAddress + ":" + VIDEO_PORT + "/cam_pic_new.php?"));
+                        Media media = new Media(mLibVLC, Uri.parse("http://jeremy:jeremy@" + chassisAddress + ":" + VIDEO_PORT + "/cam_pic_new.php?"));
                         media.setHWDecoderEnabled(true, false);
                         media.addOption(":network-caching=100");
                         media.addOption(":clock-jitter=0");
                         media.addOption(":clock-synchro=0");
-                        media.addOption(":transform-type=180");
+                        //media.addOption(":transform-type=180");
 
                         mMediaPlayer.setMedia(media);
                         mMediaPlayer.play();
@@ -95,13 +101,13 @@ public class VideoActivity extends Activity implements IVLCVout.Callback {
         vout.setWindowSize(Resources.getSystem().getDisplayMetrics().widthPixels, (int) (Resources.getSystem().getDisplayMetrics().widthPixels * VIDEO_ASPECT_RATIO));
         vout.attachViews();
 
-        Media media = new Media(mLibVLC, Uri.parse("http://jeremy:jeremy@" + armAddress + ":" + VIDEO_PORT + "/cam_pic_new.php?"));//Change back to chassis
+        Media media = new Media(mLibVLC, Uri.parse("http://jeremy:jeremy@" + chassisAddress + ":" + VIDEO_PORT + "/cam_pic_new.php?"));//Change back to chassis
         //Media media = new Media(mLibVLC, Uri.parse("tcp/h264://" + armAddress + ":3333"));
         media.setHWDecoderEnabled(true, false);
         media.addOption(":network-caching=100");
         media.addOption(":clock-jitter=0");
         media.addOption(":clock-synchro=0");
-        media.addOption(":transform-type=180");
+        //media.addOption(":transform-type=180");
 
         mMediaPlayer.setMedia(media);
         mMediaPlayer.setAspectRatio("16:9");
@@ -113,7 +119,13 @@ public class VideoActivity extends Activity implements IVLCVout.Callback {
     protected void onDestroy() {
         super.onDestroy();
 
-        mMediaPlayer.stop();
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+        }
+
+        if (controllerView != null) {
+            controllerView.killThreads();
+        }
     }
 
     @Override

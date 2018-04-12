@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
@@ -33,18 +34,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         SharedPreferences settings = getSharedPreferences("UserInfo", 0);
         chassisAddress.setText(settings.getString("chassisAddress", "Chassis IP Address"));
         armAddress.setText(settings.getString("armAddress", "Arm IP Address"));
+
+        chassisAddress.setHint("Chassis ip address");
+        armAddress.setHint("Arm ip address");
     }
 
     public void onClick(View v)
     {
         String chassisIPAddress = chassisAddress.getText().toString();
         String armIPAddress = armAddress.getText().toString();
-        if (chassisIPAddress.equals(""))
-        {
-            armAddress.setError("Enter chassis ip address.");
+        if (chassisIPAddress.equals("")) {
+            Toast.makeText(getApplicationContext(), "Enter chassis ip address.", Toast.LENGTH_LONG).show();
             return;
         } else if (armIPAddress.equals("")) {
-            chassisAddress.setError("Enter arm ip address.");
+            Toast.makeText(getApplicationContext(), "Enter arm ip address.", Toast.LENGTH_LONG).show();
             return;
         }
 

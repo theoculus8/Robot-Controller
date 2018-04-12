@@ -5,7 +5,7 @@ public class DeviceManager {
     private ArmDevice arm;
     private ChassisDevice chassis;
 
-    public DeviceManager(String armAddress, String chassisAddress) {
+    public DeviceManager(String armAddress, String chassisAddress) throws Exception {
         arm = new ArmDevice();
         chassis = new ChassisDevice();
 
@@ -20,6 +20,11 @@ public class DeviceManager {
         }
 
         arm.connectToDevice(armAddress);
+    }
+
+    public void killThreads() {
+        arm.killThreads();
+        chassis.killThreads();
     }
 
     public void moveArmNorthWest(int percentLeft, int percentUp) {
